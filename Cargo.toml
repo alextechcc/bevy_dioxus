@@ -4,20 +4,20 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.13"
-bevy_mod_picking = { version = "0.18", default-features = false, features = [
-    "backend_bevy_ui",
+bevy = "0.14"
+bevy_mod_picking = { version = "0.20", default-features = false, features = [
+  "backend_bevy_ui",
 ] }
 dioxus = { version = "0.5", default-features = false, features = [
-    "macro",
-    "signals",
-    "hooks",
+  "macro",
+  "signals",
+  "hooks",
 ] }
 dioxus-rsx = { version = "0.5", default-features = false, features = [
-    "hot_reload",
+  "hot_reload",
 ], optional = true }
 dioxus-hot-reload = { version = "0.5", default-features = false, features = [
-    "custom_file_watcher",
+  "custom_file_watcher",
 ], optional = true }
 
 [features]

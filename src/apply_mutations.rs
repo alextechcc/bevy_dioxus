@@ -6,12 +6,11 @@ use bevy::{
     asset::AssetServer,
     ecs::{
         entity::{Entity, EntityHashMap},
-        system::Command,
-        world::World,
+        world::{Command, World},
     },
     hierarchy::{BuildWorldChildren, Children, DespawnRecursive, Parent},
-    prelude::default,
-    render::{color::Color, view::Visibility},
+    prelude::{default, Color},
+    render::view::Visibility,
     text::{Text, TextLayoutInfo, TextStyle},
     transform::components::Transform,
     ui::{

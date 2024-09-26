@@ -1,7 +1,8 @@
 use bevy::{
     asset::{AssetPath, AssetServer},
+    color::{Color, Srgba},
     math::Quat,
-    render::{color::Color, view::Visibility},
+    render::view::Visibility,
     text::{JustifyText, Text},
     transform::components::Transform,
     ui::*,
@@ -210,7 +211,9 @@ pub fn set_attribute(
 }
 
 fn parse_color(hex: &str) -> Color {
-    Color::hex(hex).unwrap_or_else(|_| panic!("Encountered invalid bevy_dioxus Color hex `{hex}`."))
+    Srgba::hex(hex)
+        .unwrap_or_else(|_| panic!("Encountered invalid bevy_dioxus Color hex `{hex}`."))
+        .into()
 }
 
 fn parse_f32(float: &str) -> f32 {
