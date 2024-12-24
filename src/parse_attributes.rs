@@ -2,26 +2,32 @@ use bevy::{
     asset::{AssetPath, AssetServer},
     color::{Color, Srgba},
     math::Quat,
+    prelude::Text,
     render::view::Visibility,
-    text::{JustifyText, Text},
+    text::{JustifyText, TextColor, TextFont, TextLayout},
     transform::components::Transform,
     ui::*,
 };
 use std::f32::consts::PI;
+use widget::ImageNode;
 
 #[allow(clippy::too_many_arguments)]
 pub fn set_attribute(
     name: &str,
     value: &str,
-    style: &mut Style,
+    style: &mut Node,
     border_color: &mut BorderColor,
     outline: &mut Outline,
     background_color: &mut BackgroundColor,
     transform: &mut Transform,
     visibility: &mut Visibility,
-    z_index: &mut ZIndex,
+    z_index: Option<&mut ZIndex>,
+    z_index_global: Option<&mut GlobalZIndex>,
     text: Option<&mut Text>,
-    image: Option<&mut UiImage>,
+    text_layout: Option<&mut TextLayout>,
+    text_font: Option<&mut TextFont>,
+    text_color: Option<&mut TextColor>,
+    image: Option<&mut ImageNode>,
     asset_server: &AssetServer,
 ) {
     #[allow(unused_variables, unreachable_code)]
@@ -175,36 +181,46 @@ pub fn set_attribute(
         ("visibility", "hidden") => *visibility = Visibility::Hidden,
         ("visibility", "visible") => *visibility = Visibility::Visible,
         ("z_index", value) => match value.split_once(':') {
-            Some(("local", value)) => *z_index = ZIndex::Local(parse_i32(value)),
-            Some(("global", value)) => *z_index = ZIndex::Global(parse_i32(value)),
-            None => *z_index = ZIndex::Local(parse_i32(value)),
+            Some(("local", value)) => {
+                if let Some(z_index) = z_index {
+                    *z_index = ZIndex(parse_i32(value))
+                }
+            }
+            Some(("global", value)) => {
+                if let Some(z_index_global) = z_index_global {
+                    *z_index_global = GlobalZIndex(parse_i32(value))
+                }
+            }
+            None => {
+                if let Some(z_index) = z_index {
+                    *z_index = ZIndex(parse_i32(value))
+                }
+            }
             _ => panic!("Encountered invalid bevy_dioxus ZIndex `{value}`."),
         },
-        ("text", value) if text.is_some() => text.unwrap().sections[0].value = value.to_owned(),
-        ("text_direction", "inherit") if text.is_some() => style.direction = Direction::Inherit,
-        ("text_direction", "left_to_right") if text.is_some() => {
-            style.direction = Direction::LeftToRight;
+        ("text", value) if text.is_some() => text.unwrap().0 = value.to_owned(),
+        ("text_multiline_justification", layout_str) => {
+            if let Some(layout) = text_layout {
+                layout.justify = match layout_str {
+                    "left" => JustifyText::Left,
+                    "center" => JustifyText::Center,
+                    "right" => JustifyText::Right,
+                    _ => panic!("Encountered invalid text justification: {}", layout_str),
+                };
+            }
         }
-        ("text_direction", "right_to_left") if text.is_some() => {
-            style.direction = Direction::RightToLeft;
+        ("text_size", value) => {
+            if let Some(text_font) = text_font {
+                text_font.font_size = parse_f32(value)
+            }
         }
-        ("text_multiline_justification", "left") if text.is_some() => {
-            text.unwrap().justify = JustifyText::Left;
-        }
-        ("text_multiline_justification", "center") if text.is_some() => {
-            text.unwrap().justify = JustifyText::Center;
-        }
-        ("text_multiline_justification", "right") if text.is_some() => {
-            text.unwrap().justify = JustifyText::Right;
-        }
-        ("text_size", value) if text.is_some() => {
-            text.unwrap().sections[0].style.font_size = parse_f32(value);
-        }
-        ("text_color", value) if text.is_some() => {
-            text.unwrap().sections[0].style.color = parse_color(value);
+        ("text_color", value) => {
+            if let Some(text_color) = text_color {
+                text_color.0 = parse_color(value)
+            }
         }
         ("image_asset_path", value) if image.is_some() => {
-            image.unwrap().texture = asset_server.load(AssetPath::parse(value));
+            image.unwrap().image = asset_server.load(AssetPath::parse(value));
         }
         _ => panic!("Encountered unsupported bevy_dioxus attribute `{name}: {value}`."),
     }

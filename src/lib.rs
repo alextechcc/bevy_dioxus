@@ -26,7 +26,7 @@ use bevy::{
         schedule::IntoSystemConfigs,
     },
     prelude::Deref,
-    ui::{node_bundles::NodeBundle, ui_focus_system},
+    ui::{ui_focus_system, Node},
     utils::HashMap,
 };
 use dioxus::dioxus_core::{Element, ElementId, VirtualDom};
@@ -42,7 +42,7 @@ pub mod prelude {
     };
     pub use super::elements::*;
     pub use super::{DioxusUiBundle, DioxusUiPlugin, DioxusUiRoot};
-    pub use bevy_mod_picking::pointer::PointerButton;
+    pub use bevy_picking::pointer::PointerButton;
     pub use dioxus;
     pub use dioxus::prelude::{Event as DioxusEvent, *};
 }
@@ -72,7 +72,7 @@ impl Plugin for DioxusUiPlugin {
 #[derive(Bundle)]
 pub struct DioxusUiBundle {
     pub dioxus_ui_root: DioxusUiRoot,
-    pub node_bundle: NodeBundle,
+    pub node: Node,
 }
 
 #[derive(Component, Deref, Hash, PartialEq, Eq, Clone, Copy)]

@@ -1,16 +1,15 @@
 use bevy::{prelude::*, reflect::TypeInfo};
 use bevy_dioxus::{colors::*, prelude::*};
-use bevy_mod_picking::DefaultPickingPlugins;
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins, DioxusUiPlugin, DefaultPickingPlugins))
+        .add_plugins((DefaultPlugins, DioxusUiPlugin))
         .add_systems(Startup, |mut commands: Commands| {
             commands.spawn(DioxusUiBundle {
                 dioxus_ui_root: DioxusUiRoot(Editor),
-                node_bundle: NodeBundle::default(),
+                node: Node::default(),
             });
-            commands.spawn((Camera2dBundle::default(), Name::new("Camera")));
+            commands.spawn((Camera2d::default(), Name::new("Camera")));
         })
         .run();
 }
@@ -33,7 +32,7 @@ fn Editor() -> Element {
 
 #[component]
 fn SceneTree(selected_entity: Signal<Option<Entity>, SyncStorage>) -> Element {
-    let mut entities = use_query_filtered::<(Entity, DebugName), Without<Node>>();
+    let mut entities = use_query_filtered::<(Entity, NameOrEntity), Without<Node>>();
     let entities = entities.query();
     let mut entities = entities.into_iter().collect::<Vec<_>>();
     entities.sort_by_key(|(entity, _)| *entity);
@@ -152,7 +151,8 @@ fn component_inspector<'a>(type_info: &'a TypeInfo) -> Element {
             TypeInfo::Array(_) => rsx! { "TODO" },
             TypeInfo::Map(_) => rsx! { "TODO" },
             TypeInfo::Enum(_) => rsx! { "TODO" },
-            TypeInfo::Value(_) => rsx! { "TODO" },
+            TypeInfo::Opaque(_) => rsx! { "TODO" },
+            TypeInfo::Set(_) => rsx! { "TODO" },
         }
     }
 }

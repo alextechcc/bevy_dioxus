@@ -2,7 +2,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::{Entity, EntityHashSet},
-        event::{Event, EventWriter, Events, ManualEventReader},
+        event::{Event, EventWriter, Events, EventCursor},
         system::{Local, Query, Resource},
         world::World,
     },
@@ -10,12 +10,12 @@ use bevy::{
     prelude::EntityWorldMut,
     ui::RelativeCursorPosition,
 };
-use bevy_mod_picking::events::{Click, Down, Out, Over, Pointer, Up};
+use bevy_picking::events::{Click, Down, Out, Over, Pointer, Up};
 use std::{any::Any, mem, rc::Rc};
 
 // TODO: Other events
 pub mod events {
-    use bevy_mod_picking::pointer::PointerButton;
+    use bevy_picking::pointer::PointerButton;
 
     super::impl_event! [
         ();
@@ -35,13 +35,13 @@ pub mod events {
 
 #[derive(Resource, Default)]
 pub struct EventReaders {
-    click: ManualEventReader<Pointer<Click>>,
-    click_down: ManualEventReader<Pointer<Down>>,
-    click_up: ManualEventReader<Pointer<Up>>,
-    mouse_over: ManualEventReader<Pointer<Over>>,
-    mouse_out: ManualEventReader<Pointer<Out>>,
-    mouse_enter: ManualEventReader<MouseEnter>,
-    mouse_exit: ManualEventReader<MouseExit>,
+    click: EventCursor<Pointer<Click>>,
+    click_down: EventCursor<Pointer<Down>>,
+    click_up: EventCursor<Pointer<Up>>,
+    mouse_over: EventCursor<Pointer<Over>>,
+    mouse_out: EventCursor<Pointer<Out>>,
+    mouse_enter: EventCursor<MouseEnter>,
+    mouse_exit: EventCursor<MouseExit>,
 }
 
 impl EventReaders {
